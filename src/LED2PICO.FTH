@@ -50,7 +50,7 @@ dcls show
 8 bytes grx 
 $c5c181ff grx ! 
 $fef0c080 grx 4 + ! 
-grx 8 0 0 wrchar
+grx 8 2 2 wrchar
 show
 
     
