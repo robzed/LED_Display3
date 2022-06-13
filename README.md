@@ -8,13 +8,22 @@ You'll need to load TACHYON (you can do this with FL and get the whole thing loa
 
 You'll then need to load LED2PICO.FTH from the src/ directory.
 
+
 #Hardware
 
 The display itself is a 24 x 24 pixel Neopixel (WS2812) based display. 
 
 The controller board is loosely based on the Maker Pi Pico board by Cytron https://www.cytron.io/p-maker-pi-pico - the code will work with other configurations - see TACHYON.FTH for details and custom configuration.
 
-(Pictures to follow).
+![Board Picture](images/board.jpg)
+
+
+#Current code
+
+Simple test image
+
+![Test Image](images/test_image.jpeg)
+
 
 #Background
 
