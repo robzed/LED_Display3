@@ -29,10 +29,7 @@ dpixw @ 0 do
 loop 2drop ;
 : setdwidth ( width -- ) dup dpixw ! 1- |< dmask ! ;
 
-
-\ %11111111 0 0 pixaddr wrpix
-\ %10000001 0 1 pixaddr wrpix
-\ %10011001 0 2 pixaddr wrpix
+( Character printing )
 
 : wrchar ( s-addr height x y -- )
   pixaddr swap
@@ -47,6 +44,12 @@ loop 2drop ;
 0 variable _dx
 0 variable _dy
 : draw_at ( x y -- ) _dy ! _dx ! ;
+: dwrap
+  _dx @ dwidth >= IF
+    b/glyph _dy +! 0 _dx !
+    _dy @ dheight >= IF 0 _dy ! THEN
+  THEN
+;
 
 \ Write a font character
 : .fontch ( char -- )
@@ -55,13 +58,17 @@ loop 2drop ;
   swap 1+           ( width addr+1    )
   b/glyph 1- _dx @ _dy @ wrchar
   1+ _dx +!
+  dwrap
 ;
 
-
-
-
-
 ( Do some demo display )
+
+: fontstr ( addr n -- )
+  0 do
+    dup c@ .fontch
+    1+
+  loop
+;
 
 create heart
 %01100110 c,
@@ -76,8 +83,10 @@ dcls
 \ $c5c181ff grx !
 \ $fef0c080 grx 4 + !
 \ grx 8 2 2 wrchar
-` C .fontch
-` P .fontch
+\ ` C .fontch
+\ ` P .fontch
+: F2020 S" Forth 2020" fontstr ;
+F2020
 8 setdwidth
 heart 6 8 18 wrchar
 
