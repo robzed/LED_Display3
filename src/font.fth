@@ -445,3 +445,10 @@ create end_chars
   then
 ;
 
+
+
+: list_glyph ( addr -- )
+  b/glyph 0 do
+    dup I + C@ .bin8 crlf
+  loop
+;
