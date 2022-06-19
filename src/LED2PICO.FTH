@@ -1,3 +1,5 @@
+forget *led2pico* : *led2pico* ;
+
 zap 
 $10 neo!
 24 constant dwidth 
@@ -21,6 +23,8 @@ dwidth dheight * pixsize * bytes mybuf
 \ 12345678901234567890123456789012
 
 $2000 variable dcolour
+\ 8 variable dpixw
+\ $80 variable dmask
 
 : wrpix ( data dest-addr -- )
 8 0 do 
@@ -53,4 +57,4 @@ $fef0c080 grx 4 + !
 grx 8 2 2 wrchar
 show
 
-    
+
