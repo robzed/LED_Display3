@@ -14,7 +14,7 @@ dwidth dheight * pixsize * bytes mybuf
 : cline ( y -- ) dwidth 0 do 0 over I swap setpixel loop drop ;
 : dcls ( -- ) dheight 0 do I cline loop ;
 
-$2000 variable dcolour
+$1000 variable dcolour
 8 variable dpixw
 $80 variable dmask
 
@@ -63,11 +63,11 @@ loop 2drop ;
 
 ( Do some demo display )
 
-: fontstr ( addr n -- )
+: .fontstr ( addr n -- )
   0 do
     dup c@ .fontch
     1+
-  loop
+  loop drop
 ;
 
 create heart
@@ -85,10 +85,41 @@ dcls
 \ grx 8 2 2 wrchar
 \ ` C .fontch
 \ ` P .fontch
-: F2020 S" Forth 2020" fontstr ;
-F2020
-8 setdwidth
-heart 6 8 18 wrchar
+: F2020 S" Forth 2020" .fontstr ;
+\ F2020
+\ 8 setdwidth
+\ heart 6 8 18 wrchar
 
-show
+\ show
+
+
+( number printing)
+
+: .LED2  ( u  ) 0 <# # #S #> .fontstr ;
+
+
+( colour for printing )
+: dark_red $1000 dcolour ! ;
+: dark_green $100000 dcolour ! ;
+
+( time printing)
+
+: _LEDtime TIME@ HMS .LED2 ` : .fontch .LED2 drop ;
+: .LEDdate ;
+: .LEDday ;
+
+: time_of_day
+  time@ hms nip nip
+  dup 22 > if drop 0 exit then
+  dup 7 < if drop 0 exit then
+  drop 1
+;
+
+: .LEDtime dark_red dcls 0 0 draw_at _LEDtime show ;
+: schedule_time
+ time_of_day
+ 1 = if .LEDtime else dcls show then
+;
+
+: time_loop begin schedule_time  1000 ms key? until key ;
 
