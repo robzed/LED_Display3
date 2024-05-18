@@ -8,6 +8,25 @@ You'll need to load TACHYON (you can do this with FL and get the whole thing loa
 
 You'll then need to load LED2PICO.FTH from the src/ directory.
 
+# Serial Emulator
+
+Since the PicoForth/Tachyon extensions use colour ANSI sequences - minicom has good support. It might also work via screen.
+
+minicom --color=on -8 -b 921600 -D <<<insert serial port here>>>
+
+For example
+  minicom --color=on -8 -b 921600 -D COM4
+  minicom --color=on -8 -b 921400 -D /dev/tty.serial0
+  minicom --color=on -8 -b 921600 -D /dev/cu.usbserial-A50285BI
+
+## Mac Users
+
+NOTE: The Mac requires a switch to a higher baud rate than API that minicom uses will All. You have to switch the baud rate from another terminal session while minicom is running because MacOS API doesn’t allow setting baud rate that high via the API that minicom uses…
+
+stty -f /dev/cu.usbserial-A50285BI 921600
+
+(Use same device - cu or tty as above for Minicom)
+
 
 # Hardware
 

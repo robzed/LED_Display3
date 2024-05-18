@@ -1,3 +1,5 @@
+\   PICO LED dislay routines   Copyright (c) 2022 Rob Probin   (MIT License)                                                   
+
 mybuf org  forget *led2pico*   : *led2pico* ;
 
 include font.f
@@ -99,14 +101,16 @@ dcls
 
 
 ( colour for printing )
-: dark_red $1000 dcolour ! ;
-: dark_green $100000 dcolour ! ;
+: dark_red $400 dcolour ! ;
+: dark_green $40000 dcolour ! ;
+: dark_blue $4 dcolour ! ;                                                                                                     
 
 ( time printing)
 
 : _LEDtime TIME@ HMS .LED2 ` : .fontch .LED2 drop ;
 : .LEDdate ;
-: .LEDday ;
+: .LEDday day@ 1- 3 * s" MONTUEWEDTHUFRISATSUN" DROP + 3 .fontstr ;                                                            
+
 
 : time_of_day
   time@ hms nip nip
@@ -115,11 +119,22 @@ dcls
   drop 1
 ;
 
-: .LEDtime dark_red dcls 0 0 draw_at _LEDtime show ;
-: schedule_time
- time_of_day
- 1 = if .LEDtime else dcls show then
+
+: .LEDtime dark_red 0 0 draw_at _LEDtime ;                                                                                     
+\ : .LEDtime dark_red dcls 0 0 draw_at _LEDtime show ;
+
+: schedule_time                                                                                                                
+ dcls time_of_day                                                                                                              
+ 1 = if                                                                                                                        
+    dcls 0 6 draw_at dark_blue .LEDday .LEDtime                                                                                
+ then                                                                                                                          
+ show                                                                                                                          
 ;
+
+\ : schedule_time
+\ time_of_day
+\ 1 = if .LEDtime else dcls show then
+\ ;
 
 : time_loop begin schedule_time  1000 ms key? until key ;
 
