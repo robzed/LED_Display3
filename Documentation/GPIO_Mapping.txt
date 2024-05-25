@@ -1,0 +1,41 @@
+GPIO Mapping of Rob's Board
+===========================
+
+GP0 = Serial TX UART0
+GP1 = Serial RX UART0
+
+GP2 = RTC I2C1 SDA (4.7Kohm pull up)
+GP3 = RTC I2C1 SCL (4.7Kohm pull up)
+GP4 = ESP-01 TX UART1 (RX for ESP-01)
+GP5 = ESP-01 RX UART1 (TX for ESP-01)
+
+GP6 = not used
+GP7 = not used
+GP8 = not used
+GP9 = not used
+
+GP10 = SDCard CLK/SCLK
+GP11 = SDCARD CMD/SDI
+GP12 = SDCARD DAT0/SDO
+GP13 = SDCARD DAT1/X
+
+GP14 = SDCARD DAT2/X
+GP15 = CD/DAT3/CSn
+
+GP16 = not used (Maker Pi Pico is ESP-01, but we can't use UART0)
+GP17 = not used (Maker Pi Pico is ESP-01, but we can't use UART0)
+
+GP18 = Speaker
+GP19 = not used
+GP20 = Button 1 (Active low, use internal pull-up)
+GP21 = Button 2 (Active low, use internal pull-up)
+
+GP22 = Button 3 (Active low, use internal pull-up)
+RUN = Reset Button
+GP25 = On-board LED (Only Pico, not Pico W)
+GP26 = not used
+GP27 = not used
+
+GP28 = WS2812B RGB LED
+
+
