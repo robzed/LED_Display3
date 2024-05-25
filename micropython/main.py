@@ -242,22 +242,22 @@ def enter_button():
 max_brightness = 20
 
 character_lookup = {
-    ' ': (0, 0, 0),
-    'W': (max_brightness, max_brightness, max_brightness),
-    'w': (max_brightness//4, max_brightness//2, max_brightness//4),
-    'R': (max_brightness, 0, 0),
-    'r': (max_brightness//4, 0, 0),
-    'G': (0, max_brightness, 0),
-    'g': (0, max_brightness//4, 0),
-    'B': (0, 0, max_brightness),
-    'b': (0, 0, max_brightness//4),
-    'C': (0, max_brightness, max_brightness),
-    'O': (max_brightness, max_brightness//4, 0),
-    'P': (int(max_brightness*0.63), int(max_brightness*0.13), int(max_brightness*0.94)),
-    'M': (max_brightness, 0, max_brightness),
-    'm': (max_brightness//4, 0, max_brightness//4),
-    'Y': (max_brightness, max_brightness, 0),
-    'y': (max_brightness//4, max_brightness//4, 0),
+    ' ': (0, 0, 0),	# black
+    'W': (max_brightness, max_brightness, max_brightness),	# white
+    'w': (max_brightness//4, max_brightness//2, max_brightness//4), # dim white
+    'R': (max_brightness, 0, 0),    # red
+    'r': (max_brightness//4, 0, 0), # dim white
+    'G': (0, max_brightness, 0),	# green
+    'g': (0, max_brightness//4, 0), # dim green
+    'B': (0, 0, max_brightness),    # blue
+    'b': (0, 0, max_brightness//4), # dim blue
+    'C': (0, max_brightness, max_brightness),  # cyan
+    'O': (max_brightness, max_brightness//4, 0),  # orange
+    'P': (int(max_brightness*0.63), int(max_brightness*0.13), int(max_brightness*0.94)), # purple
+    'M': (max_brightness, 0, max_brightness),   # magenta
+    'm': (max_brightness//4, 0, max_brightness//4),  # dim magenta
+    'Y': (max_brightness, max_brightness, 0),     # yellow
+    'y': (max_brightness//4, max_brightness//4, 0),  # dim yellow (brown?)
 }
 
 def image_display(image):
