@@ -63,7 +63,7 @@ def show_pixels():
 def printchar(x, y, char):
     width, graphic = glyph(char)
     height = b_per_glyph-1
-    mask = 1 << width
+    mask = 1 << (width-1)
     orig_x = x
     for line in graphic:
         x = orig_x
