@@ -3,6 +3,7 @@ from machine import Pin, PWM, I2C
 import time
 from neopixel import NeoPixel
 from font import glyph, list_glyph, b_per_glyph
+from pictures import halloween_list, xmas_list
 
 p6 = Pin(6, Pin.OUT)    # create output pin on GPIO0
 p20 = Pin(20, Pin.IN)     # create input pin on GPIO2
@@ -84,9 +85,10 @@ def beep_on():
 
 def beep_off():
     global pwm0
-    pwm0.deinit()           # turn off PWM on the pin
-    pwm0 = None
-    
+    #pwm0.deinit()           # turn off PWM on the pin
+    #pwm0 = None
+    pwm0 = PWM(Pin(18), freq=2000, duty_u16=1)      # create PWM object from a pin
+
 def double_beep():
     beep_on()
     time.sleep_ms(50) 
@@ -95,6 +97,11 @@ def double_beep():
     beep_on()
     time.sleep_ms(50) 
     beep_off()
+
+def single_beep():
+    beep_on()
+    time.sleep_ms(50) 
+    beep_off() 
     
 i2c_addr=81
 i2c_mem_size=7
@@ -218,49 +225,79 @@ class PCF8563:
         #print(self._bytearray_data.hex())
 
 #def set_colour():
-    
-def main():
-    double_beep()
-    #p6.on()                 # set pin to "on" (high) level
-    #time.sleep_ms(500) 
-    #p6.off()                # set pin to "off" (low) level
-    
-    time_rtc = PCF8563()
-    time_rtc.print_last()
-    
-    set_the_time = False
-    if set_the_time:
-        time_rtc.set_weekday(5)
-        time_rtc.set_date(24, 5, 2024)
-        time_rtc.set_time(17, 29, 0)
-        time_rtc.print_last()
-        time_rtc.write_RTC()
-    
-    #list_glyph(*glyph('a'))
-    #list_glyph(*glyph('!'))
-    #list_glyph(*glyph('}'))
-    #print(i2c.scan())
 
-    while False:
-        r = 0
-        g = 0
-        b = 0
-        if p20.value()==0:
-            r = 20
-        if p21.value()==0:
-            g = 20
-        if p22.value()==0:
-            b = 20
-        
-        #np[0] = (r, g, b)
-        #np.write()              # write data to all pixels
-        #r, g, b = np[0]         # get first pixel colour
-        set_pixel_rgb(0, 0, r, g, b)
-        show_pixels()
+def any_button():
+    return p20.value()==0 or p21.value()==0 or p22.value()==0
 
-        time.sleep_ms(50) 
+def left_button():
+    return p20.value()==0
 
+def right_button():
+    return p21.value()==0
+
+def enter_button():
+    return p22.value()==0
+
+
+max_brightness = 20
+
+character_lookup = {
+    ' ': (0, 0, 0),
+    'W': (max_brightness, max_brightness, max_brightness),
+    'w': (max_brightness//4, max_brightness//2, max_brightness//4),
+    'R': (max_brightness, 0, 0),
+    'r': (max_brightness//4, 0, 0),
+    'G': (0, max_brightness, 0),
+    'g': (0, max_brightness//4, 0),
+    'B': (0, 0, max_brightness),
+    'b': (0, 0, max_brightness//4),
+    'C': (0, max_brightness, max_brightness),
+    'O': (max_brightness, max_brightness//4, 0),
+    'P': (int(max_brightness*0.63), int(max_brightness*0.13), int(max_brightness*0.94)),
+    'M': (max_brightness, 0, max_brightness),
+    'm': (max_brightness//4, 0, max_brightness//4),
+    'Y': (max_brightness, max_brightness, 0),
+    'y': (max_brightness//4, max_brightness//4, 0),
+}
+
+def image_display(image):
+
+    # convert image
+    clear_image()
+
+    # There are only 20 line on the images
+    for row, line in enumerate(image):
+
+        for col, c in enumerate(line):
+
+            if c in character_lookup:
+                colour = character_lookup[c]
+            else:
+                # default
+                colour = (max_brightness//4, 0, 0)
+            
+            set_pixel_colour(col, row, colour)
+
+    show_pixels()
+
+
+def slideshow(image_list):
+    
     while True:
+        for image_set in image_list:
+            image, image_time = image_set
+            image_display(image)
+
+            while image_time > 0:
+                if any_button():
+                    return
+                            
+                time.sleep_ms(100)
+                image_time -= 1
+
+
+def show_time(time_rtc):
+    while any_button()==False:
         clear_image()
         
         set_colour(orange)
@@ -291,6 +328,57 @@ def main():
         show_pixels()
         time.sleep_ms(250) 
         time_rtc.read_RTC()
+
+
+def main():
+    double_beep()
+    #p6.on()                 # set pin to "on" (high) level
+    #time.sleep_ms(500) 
+    #p6.off()                # set pin to "off" (low) level
+    
+    time_rtc = PCF8563()
+    time_rtc.print_last()
+    
+    set_the_time = False
+    if set_the_time:
+        time_rtc.set_weekday(5)
+        time_rtc.set_date(24, 5, 2024)
+        time_rtc.set_time(17, 29, 0)
+        time_rtc.print_last()
+        time_rtc.write_RTC()
+    
+    #list_glyph(*glyph('a'))
+    #list_glyph(*glyph('!'))
+    #list_glyph(*glyph('}'))
+    #print(i2c.scan())
+
+    mode = 0
+    while True:
+        if mode == 0:
+            show_time(time_rtc)
+        elif mode == 1:
+            slideshow(halloween_list)
+        elif mode == 2:
+            slideshow(xmas_list)
+
+        if left_button():
+            single_beep()
+            mode += 1
+            if mode == 3:
+                mode = 0
+            print("Left, mode =", mode)
+        elif right_button():
+            single_beep()
+            mode -= 1
+            if mode == -1:
+                mode = 2
+            print("Right, mode =", mode)
+        elif enter_button():
+            single_beep()
+            print("Enter")
+
+        time.sleep_ms(300)
+
 
 main()
 
