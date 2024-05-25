@@ -28,6 +28,7 @@ blue = (0, 0, 10)
 red = (10, 0, 0)
 magenta = (10, 0, 10)
 green = (0, 10, 0)
+dark_green = (0, 2, 0)
 cyan = (0, 10, 10)
 yellow = (10, 10, 0)
 white = (10, 10, 10)
@@ -263,12 +264,9 @@ character_lookup = {
     'y': (max_brightness//4, max_brightness//4, 0),  # dim yellow (brown?)
 }
 
-def image_display(image):
-
+def image_display_base(image):
     # convert image
-    clear_image()
 
-    # There are only 20 line on the images
     for row, line in enumerate(image):
 
         for col, c in enumerate(line):
@@ -281,9 +279,12 @@ def image_display(image):
             
             set_pixel_colour(col, row, colour)
 
+def image_display(image):
+
+    clear_image()
+    image_display_base(image)
     show_pixels()
-
-
+    
 def slideshow(image_list):
     
     while True:
@@ -317,16 +318,6 @@ def show_time(time_rtc):
         sec_string = "%02d" % time_rtc.seconds
         set_colour(blue)
         print_string(10, 3*b_per_glyph, sec_string)
-
-        if False:
-            set_pixel_colour(0, 0, current_colour)
-            set_pixel_colour(2, 0, current_colour)
-            set_pixel_colour(10, 0, current_colour)
-
-            set_pixel_colour(1, 1, white)
-            set_pixel_colour(2, 2, white)
-            set_pixel_colour(3, 3, white)
-            set_pixel_colour(4, 4, blue)
         
         show_pixels()
         time.sleep_ms(250) 
@@ -458,6 +449,96 @@ def switch_test_mode():
     else:
         test_mode = row_swipe
 
+clock_face = [
+#123456789012345678901234
+"           BB           ", #1
+"                        ", #2
+"      b          b      ", #3
+"                        ", #4
+"                        ", #5
+"                        ", #6
+"  b                  b  ", #7
+"                        ", #8
+"                        ", #9
+"                        ", #0
+"                        ", #1
+"B                      B", #2
+"B                      B", #3
+"                        ", #4
+"                        ", #5
+"                        ", #6
+"  b                  b  ", #7
+"                        ", #8
+"                        ", #9
+"                        ", #0
+"                        ", #1
+"      b          b      ", #2
+"                        ", #3
+"           BB           ", #4
+#123456789012345678901234
+]
+
+def set_pixel_rounded(x, y, colour):
+    set_pixel_colour(int(x + 0.5), int(y + 0.5), colour)
+    
+# Bresenham's line algorithm
+def plotLineInt(x0, y0, x1, y1, colour):
+    dx = abs(x1 - x0)
+    sx = 1 if x0 < x1 else -1
+    dy = -abs(y1 - y0)
+    sy = 1 if y0 < y1 else -1
+    error = dx + dy
+    
+    while True:
+        set_pixel_colour(x0, y0, colour)
+        if x0 == x1 and y0 == y1:
+            break
+        e2 = 2 * error
+        if e2 >= dy:
+            if x0 == x1:
+                break
+            error = error + dy
+            x0 = x0 + sx
+
+        if e2 <= dx:
+            if y0 == y1:
+                break
+            error = error + dx
+            y0 = y0 + sy
+
+
+def plotLine(x0, y0, x1, y1, colour):
+    plotLineInt(int(x0+0.5),int(y0+0.5),int(x1+0.5),int(y1+0.5), colour)
+    
+def draw_clock_radius(x, y, length, angle_degrees_from_12, colour):
+    #angle_degrees_from_12 = -angle_degrees_from_12	# clock hand goes clockwise, sine, cosine goes anticlockwise
+    #angle_degrees_from_12 += 90	# adjust for normal 3 o'clock position for sine/cosine
+    finish_x = x + length * math.sin((angle_degrees_from_12*2*math.pi)/360)
+    finish_y = y - length * math.cos((angle_degrees_from_12*2*math.pi)/360)
+    plotLine(x, y, finish_x, finish_y, colour)
+
+def draw_60_hand(x, y, length, sixtieths_0_59, colour):
+    # 360/60 = 6
+    draw_clock_radius(x, y, length, sixtieths_0_59*6, colour)
+
+def draw_12_hand(x, y, length, twelfths, colour):
+    # 360/12 = 30
+    draw_clock_radius(x, y, length, twelfths*30, colour)
+
+def show_analogue_clock(time_rtc):
+    while any_button()==False:
+        clear_image()
+        
+        image_display_base(clock_face)
+
+        draw_60_hand(12.4, 12.4, 10, time_rtc.seconds, blue)
+        draw_60_hand(12.4, 12.4, 10, time_rtc.minutes, green)
+        draw_12_hand(12.4, 12.4, 5, time_rtc.hours+(time_rtc.minutes/60), cyan)
+        
+        show_pixels()
+        time.sleep_ms(250) 
+        time_rtc.read_RTC()
+
 
 def main():
     double_beep()
@@ -490,24 +571,26 @@ def main():
         elif mode == 2:
             slideshow(xmas_list)
         elif mode == 3:
+            show_analogue_clock(time_rtc)
+        elif mode == 4:
             test_mode()
 
         if right_button():
             single_beep()
             mode += 1
-            if mode == 4:
+            if mode == 5:
                 mode = 0
             print("Left, mode =", mode)
         elif left_button():
             single_beep()
             mode -= 1
             if mode == -1:
-                mode = 3
+                mode = 5
             print("Right, mode =", mode)
         elif enter_button():
             single_beep()
             print("Enter")
-            if mode == 3:
+            if mode == 4:
                 switch_test_mode()
 
         time.sleep_ms(300)
