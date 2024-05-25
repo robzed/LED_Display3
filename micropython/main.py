@@ -1,4 +1,7 @@
-
+# Neopixel 24x24 display using Micropython on the
+# Copyright (c) 2024 Rob Probin
+# Open Source - Released under the MIT license
+#
 from machine import Pin, PWM, I2C
 import time
 from neopixel import NeoPixel
@@ -330,6 +333,132 @@ def show_time(time_rtc):
         time_rtc.read_RTC()
 
 
+# This test display displays a complete column of pixels in Red then green
+# then blue across the display.
+def row_swipe():
+    display_mode = 0
+    display_col = 0
+    clear_image()
+    
+    while any_button()==False:
+        if display_mode == 0:
+            r = max_brightness; g = 0; b = 0;
+        elif display_mode == 1:
+            r = 0; g = max_brightness; b = 0;
+        else:
+            r = 0; g = 0; b = max_brightness;
+
+        for row in range(height):
+            set_pixel_rgb(display_col, row, r, g, b)
+
+        show_pixels()
+
+        # clear this led for the next time around the loop
+        for row in range(height):
+            set_pixel_rgb(display_col, row, 0, 0, 0)
+            
+        time.sleep_ms(100)
+  
+        display_col += 1
+        if display_col >= width:
+            display_col = 0
+            display_mode += 1
+            if display_mode == 3:
+                display_mode = 0
+
+# this test display fills each row with white, one pixel at a time
+def slow_tickup():
+
+    display_col = 0
+    clear_image()
+    
+    while any_button()==False:
+
+        set_pixel_rgb(display_col%width, display_col // width, max_brightness, max_brightness, max_brightness)
+        show_pixels()
+        time.sleep_ms(50)
+
+        display_col += 1;
+        if display_col % width == 0:
+            clear_image()
+
+        if display_col >= width * height: 
+            display_col = 0
+
+
+def pixel_walk():
+    display_mode = 0
+    display_col = 0
+    clear_image()
+    
+    while any_button()==False:
+
+        if display_mode == 0:
+            r = max_brightness; g = max_brightness; b = max_brightness;
+        elif display_mode == 1:
+            r = max_brightness; g = 0; b = 0;
+        elif display_mode == 1:
+            r = 0; g = max_brightness; b = 0;
+        else:
+            r = 0; g = 0; b = max_brightness;
+
+        set_pixel_rgb(display_col%width, display_col // width, r, g, b)
+        show_pixels()
+        set_pixel_rgb(display_col%width, display_col // width, 0, 0, 0)
+
+        time.sleep_ms(30)
+  
+        display_col += 1
+        if display_col >= width * height: 
+            display_col = 0
+            display_mode += 1
+            if display_mode == 4:
+                display_mode = 0
+
+def fill_image_white():
+    while any_button()==False:
+        np.fill(white)
+        time.sleep_ms(200)
+        show_pixels()
+
+def fill_image_red():
+    while any_button()==False:
+        np.fill(red)
+        time.sleep_ms(200)
+        show_pixels()
+
+def fill_image_green():
+    while any_button()==False:
+        np.fill(green)
+        time.sleep_ms(200)
+        show_pixels()
+
+def fill_image_blue():
+    while any_button()==False:
+        np.fill(blue)
+        time.sleep_ms(200)
+        show_pixels()
+
+test_mode = row_swipe
+
+def switch_test_mode():
+    global test_mode
+    if test_mode == row_swipe:
+        test_mode = slow_tickup
+    elif test_mode == slow_tickup:
+        test_mode = pixel_walk
+    elif test_mode == pixel_walk:
+        test_mode = fill_image_white
+    elif test_mode == fill_image_white:
+        test_mode = fill_image_red
+    elif test_mode == fill_image_red:
+        test_mode = fill_image_green
+    elif test_mode == fill_image_green:
+        test_mode = fill_image_blue
+    else:
+        test_mode = row_swipe
+
+
 def main():
     double_beep()
     #p6.on()                 # set pin to "on" (high) level
@@ -360,22 +489,26 @@ def main():
             slideshow(halloween_list)
         elif mode == 2:
             slideshow(xmas_list)
+        elif mode == 3:
+            test_mode()
 
-        if left_button():
+        if right_button():
             single_beep()
             mode += 1
-            if mode == 3:
+            if mode == 4:
                 mode = 0
             print("Left, mode =", mode)
-        elif right_button():
+        elif left_button():
             single_beep()
             mode -= 1
             if mode == -1:
-                mode = 2
+                mode = 3
             print("Right, mode =", mode)
         elif enter_button():
             single_beep()
             print("Enter")
+            if mode == 3:
+                switch_test_mode()
 
         time.sleep_ms(300)
 
