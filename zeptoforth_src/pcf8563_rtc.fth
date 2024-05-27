@@ -129,7 +129,6 @@ hvariable year
 
 : print_raw_rtc ( -- )
     hex
-    read_rtc 
     cr
     number_time_registers 0 do I RTC-buffer + c@ . loop
 ;
@@ -168,7 +167,6 @@ hvariable year
     cr
 ;
 
-\ **UNTESTED**
 : set_time { hrs mins secs -- }
     0 bad_rtc c!
     secs seconds c!
@@ -176,7 +174,7 @@ hvariable year
     hrs hours c!
 ;
 
-\ **UNTESTED**
+
 : set_date { d m y weekdy -- }
     d days c!
     weekdy weekdays c!
@@ -184,14 +182,14 @@ hvariable year
     y year h!
 ;
 
-\ **UNTESTED**
+
 : >BCD ( n -- n' )
     dup 10 / 4 lshift
     swap 10 mod + 
 ;
 
-\ **UNTESTED**
-: write_rtc ( -- )
+
+: write_rtc_buffer ( -- )
     seconds c@ >BCD RTC-buffer c!
     minutes c@ >BCD RTC-buffer 1+ c!
     hours c@ >BCD RTC-buffer 2 + c!
@@ -203,8 +201,29 @@ hvariable year
     months c@ >BCD RTC-buffer 5 + c!
     year h@ 100 mod >BCD RTC-buffer 6 + c!
     year h@ 2000 >= if
-        RTC-buffer 5 + c@ $80 + RTC-buffer 5 +
+        RTC-buffer 5 + c@ $80 + RTC-buffer 5 + c!
     then
+
+;
+
+: base_write_rtc { addr pin0 pin1 i2c-periph -- }
+    addr pin0 pin1 i2c-periph base_init_rtc
+
+    i2c-periph enable-i2c
+
+    \ send the register where time starts
+    0. { D^ buf } time_start_register buf c! 
+    buf 1 i2c-periph >i2c drop \ ." >i2c sent" . cr
+    \ write the time
+    RTC-buffer number_time_registers i2c-periph >i2c-stop drop \ ." >i2c-stop got" . cr
+
+    i2c-periph disable-i2c
+;
+
+: write_rtc ( -- )
+  write_rtc_buffer
+
+  PCF8563-address rtc-i2c-pin0 rtc-i2c-pin1 rtc-i2c-peripheral base_write_rtc
 
 ;
 
@@ -218,15 +237,30 @@ end-module
 \ tested on rp2040_big/zeptoforth_full_usb-1.4.0.1.uf2 - doesn't work
 \ tested on rp2040_big/zeptoforth_full_usb-1.5.5.uf2 - does work
 \ 
-PCF8563-RTC import
-init_rtc 
-.s 
-print_raw_rtc
-.s
-print_rtc
-.s
-
-
+\ PCF8563-RTC import
+\ init_rtc 
+\ .s
+\ read_rtc
+\ .s 
+\ print_raw_rtc
+\ .s
+\ print_rtc
+\ .s
+\ 
+\ 12 34 56 set_time
+\ 1 2 2003 4 set_date
+\ 
+\ write_rtc_buffer
+\ print_raw_rtc
+\ write_rtc
+\
+\ 
+\ read_rtc
+\ .s 
+\ print_raw_rtc
+\ .s
+\ print_rtc
+\ .s
 
 
 
