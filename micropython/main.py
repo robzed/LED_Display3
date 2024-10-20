@@ -7,6 +7,8 @@ import time
 from neopixel import NeoPixel
 from font import glyph, list_glyph, b_per_glyph
 from pictures import halloween_list, xmas_list
+import math
+from web_server import start_networking
 
 p6 = Pin(6, Pin.OUT)    # create output pin on GPIO0
 p20 = Pin(20, Pin.IN)     # create input pin on GPIO2
@@ -545,6 +547,8 @@ def main():
     #p6.on()                 # set pin to "on" (high) level
     #time.sleep_ms(500) 
     #p6.off()                # set pin to "off" (low) level
+    #start_networking()
+    print("Connected")
     
     time_rtc = PCF8563()
     time_rtc.print_last()
