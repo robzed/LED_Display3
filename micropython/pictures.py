@@ -1,3 +1,6 @@
+# These pictures were created by Rob Probin, Claire Probin and Emily Probin in 2010. 
+# Copyright (c) 2010 Rob Probin, Claire Probin, Emily Probin
+# Porting and Modifications by Rob Probin, 2024.
 
 all_off_image = []
 

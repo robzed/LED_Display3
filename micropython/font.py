@@ -1,3 +1,10 @@
+# This font is a *modified* version of a 4x5 font called 'CG-pixel-4x5'.
+# The FontStruction “CG pixel 4x5”
+# (https://fontstruct.com/fontstructions/show/1404171) by “vyznev” is licensed
+# under a Creative Commons CC0 Public Domain Dedication license
+# (http://creativecommons.org/publicdomain/zero/1.0/).
+# Font found from: https://graphicdesign.stackexchange.com/questions/91478/a-font-thats-readable-with-a-5px-height
+# Modifications by Rob Probin, 2024.
 
 base_chars = [
 3, # character ' ' added manually
