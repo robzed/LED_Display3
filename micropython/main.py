@@ -1,4 +1,4 @@
-# Neopixel 24x24 display using Micropython on the
+# Neopixel 24x24 display using Micropython on the rp2040
 # Copyright (c) 2024 Rob Probin
 # Open Source - Released under the MIT license
 #

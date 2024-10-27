@@ -6,7 +6,6 @@
 \ 4 constant pixsize
 
 #include font.fth
-
 #include neopixel.fs
 
 dwidth dheight * constant num_pixels
@@ -19,10 +18,12 @@ pio import
 
 num_pixels neopixel-size ( dup . cr ) buffer: pixels
 
-neopixel-state-machine PIO0 num_pixels pixel_gpio pixels init-neopixel
+: init-LED2PICO
+  neopixel-state-machine PIO0 num_pixels pixel_gpio pixels init-neopixel
 
-pixels clear-neopixel
-pixels update-neopixel
+  pixels clear-neopixel
+  pixels update-neopixel
+;
 
 \ 64 64 64 0 pixels neopixel!
 \ 32 32 32 1 pixels neopixel!
@@ -119,14 +120,15 @@ create heart
 %00111100 c,
 %00011000 c,
 
-dcls
+\ init-neopixel
+\ dcls
 \ 8 bytes grx
 \ $c5c181ff grx !
 \ $fef0c080 grx 4 + !
 \ grx 8 2 2 wrchar
 \ ` C .fontch
 \ ` P .fontch
-: F2020 S" Forth 2020" .fontstr ;
+\ : F2020 S" Rob 2024" .fontstr ;
 \ F2020
 \ 8 setdwidth
 \ heart 6 8 18 wrchar
@@ -140,9 +142,9 @@ dcls
 
 
 ( colour for printing )
-: dark_red 4 _red c!  0 green c! 0 blue c! ;
-: dark_green 0 _red c!  4 green c! 0 blue c! ;
-: dark_blue 0 _red c!  0 green c! 4 blue c! ;                                                                                                     
+: dark_red 4 _red c!  0 _green c! 0 _blue c! ;
+: dark_green 0 _red c!  4 _green c! 0 _blue c! ;
+: dark_blue 0 _red c!  0 _green c! 4 _blue c! ;                                                                                                     
 
 ( time printing)
 
