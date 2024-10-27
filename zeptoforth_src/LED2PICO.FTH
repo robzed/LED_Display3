@@ -50,7 +50,7 @@ cvariable _blue
 : setpixelxy ( x y -- ) dwidth * + setpixel ;
 : clrpixelxy ( x y -- ) dwidth * + clrpixel ;
 \ : cline ( y -- ) dwidth 0 do over I swap setpixel loop drop ;
-: dcls ( -- ) clear-neopixel ;
+: dcls ( -- ) pixels clear-neopixel ;
 
 \ $1000 variable dcolour
 ( 8 ) variable dpixw
